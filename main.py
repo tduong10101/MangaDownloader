@@ -17,8 +17,6 @@ def get_chapters(addr):
     list = []
     ul = soup.find("ul", attrs={"class": "chlist"})
     for a in ul.findAll("a", attrs={"class": "tips"}):
-        # clink = c.find("a",attrs={"class":"tips"})
-        # print clc[]ink
         list.append(a['href'])
     return list
 
@@ -42,10 +40,10 @@ def get_pages(addr):
 
 def make_dir(addr):
     split = addr.split("/")
-    chap = split[-2]
-    name = split[-3]
+    subfolder = "/".join(split[4:-1])
+
     dir = os.path.dirname(__file__)
-    dir = "{}/{}/{}".format(dir, name, chap)
+    dir = "{}/{}".format(dir, subfolder)
     if not os.path.exists(dir):
         os.makedirs(dir)
         return dir
