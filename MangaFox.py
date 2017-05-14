@@ -26,12 +26,12 @@ class MangaFox:
         else:
             if ("http://mangafox.me/manga/" not in link):
                 raise ValueError(("Input link {} is not a mangafox page!").format(link))
-
+            self.name = link.split("/")[4]
         self.soup = self.get_soup(self.link)
         if "Search for  Manga at Manga Fox" in self.soup.find("title"):
-            raise ValueError("Unable to find {} manga".format(name))
+            raise ValueError("Unable to find {} manga".format(self.name))
         elif "Manga Index - Manga Fox!" in self.soup.find("title"):
-            raise ValueError("Unable to find manga from link".format(link))
+            raise ValueError("Unable to find manga from link".format(self.link))
 
         self.chapters = self.get_chapters()
 
@@ -62,8 +62,8 @@ class MangaFox:
             list.append(pageLink)
         return list
 
-    def make_dir(sefl, addr):
-        split = addr.split("/")
+    def make_dir(self, chapter):
+        split = self.link.split("/")
         subfolder = "/".join(split[4:-1])
 
         dir = os.path.dirname(__file__)
@@ -74,12 +74,13 @@ class MangaFox:
         else:
             return False
 
-    def down_img(self, addr):
-        url = requests.get(addr)
-        filepath = self.make_dir(addr)
-        soup = bs.BeautifulSoup(url.content)
+    def get_img(self, page):
+        soup = self.get_soup(page)
         img = soup.find("img", attrs={"id": "image"})
-        return urllib.urlretrieve(img['src'], filepath)
+        return img['src']
+
+    def down_img(self, img, path):
+        return urllib.urlretrieve(img, path)
 
 
 def main():
@@ -87,6 +88,8 @@ def main():
     chaps = bleach.get_chapters()
     print chaps[0]
     print bleach.get_pages(100)
+    print bleach.name
+    print bleach.link
 
 
 if __name__ == "__main__":
@@ -94,3 +97,5 @@ if __name__ == "__main__":
 
 #link = "http://h.mfcdn.net/store/manga/25133/001.0/compressed/d000.jpg?token=bf1ccec29786275fb5e6664a766e38db&ttl=1494482400"
 #urllib.urlretrieve(link,"test.jpg")
+    # urllib.urlretrieve(img['src'], filepath)
+    # filepath = self.make_dir(addr)
